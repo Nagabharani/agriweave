@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>AgriWeave — Farm-to-Home | Demo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Google font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f9f4;
+    --card:#ffffff;
+    --muted:#5b6b63;
+    --accent:#1f7a2b;
+    --accent-2:#8fd14f;
+    --accent-contrast:#062f12;
+    --line:#e6eee6;
+    --shadow: 0 14px 40px rgba(14,40,18,0.06);
+    --maxw:1180px;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,Segoe UI,Roboto,Arial;
+    margin:0;
+    background:linear-gradient(180deg,var(--bg),#eef8ec);
+    color:#072012;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.45;
+  }
+  .container{width:min(var(--maxw),96vw); margin:0 auto; padding:18px;}
+  header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,0.98);border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand img{height:52px;width:52px;border-radius:10px;object-fit:cover}
+  .brand .title{font-weight:800;font-size:1.05rem;color:var(--accent-contrast)}
+  .brand .tag{color:var(--muted);font-size:.88rem}
+  .actions{display:flex;gap:10px;align-items:center}
+  .pill{padding:6px 10px;border-radius:999px;background:#f1fbef;border:1px solid var(--line);font-weight:700;color:var(--accent-contrast);font-size:.88rem}
+  .btn{cursor:pointer;padding:.58rem .9rem;border-radius:10px;border:1px solid transparent;font-weight:700;background:transparent;transition:all .12s ease;font-size:.95rem}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border-color:transparent;box-shadow: 0 6px 20px rgba(31,122,43,0.14)}
+  .btn.ghost{background:white;border:1px solid var(--line);color:var(--accent-contrast)}
+  .search{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;border:1px solid var(--line);background:#fff;min-width:320px}
+  .search input{border:0;outline:0;font-size:0.95rem;background:transparent;width:100%}
+  .hero{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:center;padding:26px;border-radius:14px;background:linear-gradient(90deg, rgba(31,122,43,0.04), rgba(143,209,79,0.025));margin-top:12px}
+  .hero h1{margin:0;font-size:28px;color:var(--accent-contrast)}
+  .muted{color:var(--muted)}
+  .cta-row{display:flex;gap:10px;margin-top:12px;align-items:center}
+  .grid{display:grid;gap:12px}
+  .products-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .product{background:var(--card);border-radius:var(--radius);padding:12px;border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .thumb{height:150px;border-radius:10px;overflow:hidden;background:#fafafa;display:grid;place-items:center}
+  .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+  .thumb img:hover{transform:scale(1.03)}
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.75rem;background:rgba(143,209,79,0.12);color:var(--accent-contrast);border:1px solid rgba(143,209,79,0.08);font-weight:700}
+  .small{font-size:.86rem}
+  .drawer{position:fixed;right:0;top:0;height:100vh;width:min(520px,96vw);transform:translateX(110%);transition:transform .28s;background:var(--card);border-left:1px solid var(--line);padding:18px;display:grid;grid-template-rows:auto 1fr auto;z-index:1200}
+  .drawer.open{transform:translateX(0)}
+  .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(6,12,8,0.45);z-index:1600;padding:18px}
+  .modal.open{display:grid}
+  .dialog{background:var(--card);padding:16px;border-radius:12px;max-width:920px;width:94%;box-shadow:var(--shadow)}
+  footer{padding:18px;margin-top:18px;background:var(--card);border-top:1px solid var(--line)}
+  .flex{display:flex;gap:12px;align-items:center}
+  .farmer-card{display:flex;gap:12px;align-items:center;padding:8px;border-radius:10px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#fbfff9)}
+  .subs-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .sub-card{padding:10px;border-radius:10px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#fff,#f7fff7)}
+  .trust-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .mini{font-size:.85rem}
+  .fssai{font-size:.9rem;color:#234e12;font-weight:700;padding:10px;border-radius:8px;background:linear-gradient(90deg, rgba(143,209,79,0.06), rgba(43,122,11,0.02));border:1px solid rgba(43,122,11,0.06)}
+  .reviews-list{display:grid;gap:8px}
+  .review{padding:10px;border-radius:10px;background:#fff;border:1px solid var(--line)}
+  .farmers-carousel{display:flex;gap:12px;overflow:auto;padding:6px 0}
+  .farmer-tile{min-width:220px;border-radius:10px;padding:12px;background:#fff;border:1px solid var(--line);display:flex;gap:12px}
+  .stats-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .stat-card{background:linear-gradient(180deg,#f8fff6,#fff);border:1px solid rgba(143,209,79,0.08);padding:14px;border-radius:12px;min-width:180px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;box-shadow:0 8px 24px rgba(31,122,43,0.06)}
+  .stat-num{font-weight:900;color:var(--accent-contrast;font-size:1.6rem)}
+  .social-btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#fff}
+  .stars{color:#f3b000;font-weight:900}
+  @media (max-width:980px){
+    .hero{grid-template-columns:1fr;gap:12px}
+    .top{flex-direction:column;align-items:flex-start}
+    .products-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+    .search{min-width:unset;width:100%}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top container">
+    <div class="brand">
+      <img src="logo.jpeg" alt="AgriWeave logo" id="logoImg">
+      <div>
+        <div class="title">AgriWeave</div>
+        <div class="tag">Farm-to-Home • Traceable • Fair</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <div class="search" role="search">
+        <input id="globalSearch" placeholder="Search produce, e.g. apples, mint..." aria-label="Search products">
+        <button class="btn ghost" onclick="applySearch()">Search</button>
+      </div>
+
+      <div class="pill small" id="loyaltyBadge">Points: 0</div>
+      <div class="pill small" id="refBadge">Referral: none</div>
+      <button class="btn ghost" id="signinBtn" onclick="openAuth()">Sign in</button>
+      <button class="btn primary" id="openCart">Cart (<span id="cartCount">0</span>)</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div>
+      <div style="display:flex;gap:10px;align-items:center"><div class="badge">Farm-fresh • Local • Ethical</div></div>
+      <h1>Fresh organic produce — direct from verified farms</h1>
+      <p class="muted">Sourced from <strong id="farmersCount">120+</strong> verified farmers • Delivered in <strong>24–48 hours</strong>. Full batch traceability and transparent farmer pay.</p>
+
+      <div class="cta-row">
+        <button class="btn primary" onclick="scrollToSection('shop')">Shop Fresh</button>
+        <button class="btn ghost" onclick="openBundleBuilder()">Build a subscription</button>
+        <div style="margin-left:auto" class="muted small">Free delivery on first 2 subscriptions</div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap">
+        <div style="min-width:160px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+          <div class="muted small">Next delivery (subs)</div>
+          <div style="font-weight:800" id="nextDelivery">Wed, Nov 26</div>
+        </div>
+        <div style="min-width:160px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+          <div class="muted small">Transparency</div>
+          <div style="font-weight:800">Farmer share: 65%</div>
+        </div>
+      </div>
+
+      <!-- Experience / Stats (style C: light green organic cards) -->
+      <div class="stats-row" aria-hidden="false" style="margin-top:16px">
+       
+        <div class="stat-card">
+          <div style="font-size:1.05rem;font-weight:800;color:var(--accent-contrast)">500+ Farmers</div>
+          <div class="muted small">Partnered small & mid-scale growers</div>
+        </div>
+        <div class="stat-card">
+          <div style="font-size:1.05rem;font-weight:800;color:var(--accent-contrast)">98% Satisfaction</div>
+          <div class="muted small">Customer satisfaction (based on verified reviews)</div>
+        </div>
+        
+      </div>
+
+    </div>
+
+    <aside style="display:flex;flex-direction:column;gap:12px;align-items:stretch">
+      <div style="padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Featured Farmer</strong><div class="muted small">Supporting small farms</div></div>
+          <button class="btn ghost" onclick="openFarmerProfile(1)">View</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+          <img src="image.png" style="width:84px;height:84px;object-fit:cover;border-radius:8px">
+          <div>
+            <div style="font-weight:800" id="featuredFarmerName">brahmanandam</div>
+            <div class="muted small">Organic apples • Region 5</div>
+            <div style="margin-top:8px">
+              <span class="badge">Traceable</span>
+              <span style="margin-left:6px" class="badge">Fair Price</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+        <div style="font-weight:800">Transparency snapshot</div>
+        <div class="muted small" style="margin-top:8px">How we split the box</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <div style="flex:1;background:linear-gradient(180deg,#f6fff6,#fff);padding:8px;border-radius:8px;text-align:center">
+            <div class="muted small">Farmer</div>
+            <div style="font-weight:800">65%</div>
+          </div>
+          <div style="flex:1;background:var(--card);padding:8px;border-radius:8px;text-align:center;border:1px solid var(--line)">
+            <div class="muted small">Logistics</div>
+            <div style="font-weight:800">20%</div>
+          </div>
+          <div style="flex:1;background:var(--card);padding:8px;border-radius:8px;text-align:center;border:1px solid var(--line)">
+            <div class="muted small">Platform</div>
+            <div style="font-weight:800">15%</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section id="shop" style="margin-top:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Products</h2>
+      <div style="display:flex;gap:12px;align-items:center">
+        <label class="muted small">Sort</label>
+        <select id="sortSelect" onchange="applySort()">
+          <option value="featured">Featured</option>
+          <option value="price-low">Price low → high</option>
+          <option value="price-high">Price high → low</option>
+          <option value="fresh">Newest harvest</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="productsGrid" class="grid products-grid" style="margin-top:12px"></div>
+    <div style="text-align:center;margin-top:12px"><button id="loadMore" class="btn ghost">Load more</button></div>
+  </section>
+
+  <section style="margin-top:28px">
+    <h3>Community & Trust</h3>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+      <div style="flex:1;min-width:220px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+        <div style="font-weight:800">Farmer stories</div>
+        <div class="muted small" style="margin-top:8px">Harvest updates and personal stories from our growers.</div>
+        <div class="farmers-carousel" id="farmersCarousel" style="margin-top:12px"></div>
+        <div style="margin-top:8px"><button class="btn ghost" onclick="openFarmersPage()">View all</button></div>
+      </div>
+
+      <div style="flex:1;min-width:220px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+        <div style="font-weight:800">Verified Reviews</div>
+        <div class="muted small" style="margin-top:8px">Only verified purchases can post reviews — photos welcome.</div>
+        <div style="margin-top:12px" id="reviewSnapshot"></div>
+        <div style="margin-top:8px"><button class="btn ghost" onclick="openReviews()">See reviews</button></div>
+      </div>
+
+      <div style="flex:1;min-width:220px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+        <div style="font-weight:800">Referral & Loyalty</div>
+        <div class="muted small" style="margin-top:8px">Refer friends, earn credits & points. Use credits at checkout.</div>
+        <div style="margin-top:8px"><button class="btn ghost" onclick="openReferral()">My referral</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:28px">
+    <h3>Active Subscriptions</h3>
+    <div id="subscriptionsList" class="subs-list"></div>
+    <div id="noSubs" class="muted" style="margin-top:8px">No active subscriptions yet.</div>
+  </section>
+
+  <section id="about" style="margin-top:28px">
+    <h3>About AgriWeave</h3>
+    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-top:8px">
+      <div style="flex:1;min-width:320px;padding:16px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+        <p class="muted" style="margin:0">AgriWeave is a farm-first marketplace connecting small & mid-scale growers to urban families. We prioritize fair farmer pay, seasonal produce, and full batch traceability—so you know where your food came from and how it was grown.</p>
+        <ul style="margin-top:10px">
+          <li class="muted small">Small-batch & traceable harvests</li>
+          <li class="muted small">Farmer pay transparency—majority share to growers</li>
+          <li class="muted small">Subscriptions, bundles & flexible delivery slots</li>
+        </ul>
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+          <div class="fssai">FSSAI License: <span style="margin-left:8px;font-weight:900">FSSAI-12345678901234</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:260px;padding:16px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+        <div style="font-weight:800">Why choose us?</div>
+        <div class="muted small" style="margin-top:8px">We work with local growers, run simple quality checks, and deliver weekly boxes. Our model increases farmer incomes while giving you fresher produce.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" style="margin-top:40px">
+    <h3>Contact Us</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:16px">
+      <div style="flex:1;min-width:260px;padding:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)">
+        <div style="font-size:1.1rem;margin-bottom:6px">📞 Call Us</div>
+        <div class="muted small">Speak directly with our support team</div>
+        <div style="margin-top:10px;font-weight:800;color:var(--accent)">+91 98765 43210</div>
+      </div>
+
+      <div style="flex:1;min-width:260px;padding:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)">
+        <div style="font-size:1.1rem;margin-bottom:6px">💬 Live Chat</div>
+        <div class="muted small">Instant answers to your questions</div>
+        <button class="btn primary" style="margin-top:12px" onclick="showToast('Live chat coming soon')">Start Chat</button>
+      </div>
+
+      <div style="flex:1;min-width:260px;padding:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)">
+        <div style="font-size:1.1rem;margin-bottom:6px">📧 Email Us</div>
+        <div class="muted small">Send us your questions or project details</div>
+        <div style="margin-top:10px;font-weight:800;color:var(--accent)">hiagriweave@gmail.com</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Cart Drawer -->
+<aside id="cartDrawer" class="drawer" aria-hidden="true">
+  <header style="display:flex;justify-content:space-between;align-items:center">
+    <strong>Your Cart</strong>
+    <div><button class="btn ghost" onclick="toggleCart(false)">Close</button></div>
+  </header>
+
+  <div id="cartBody" style="overflow:auto;padding:12px"></div>
+
+  <footer style="border-top:1px solid var(--line);padding-top:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">Subtotal</div>
+      <div style="font-weight:800">₹<span id="cartSubtotal">0</span></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="btn ghost" onclick="toggleCart(false)">Continue shopping</button>
+      <button class="btn primary" onclick="openCheckout()">Checkout</button>
+    </div>
+    <div style="margin-top:8px" class="muted small">You can toggle items to subscriptions in cart. Loyalty points & referral credits apply at checkout.</div>
+  </footer>
+</aside>
+
+<!-- Auth Modal (Sign In / Sign Up) -->
+<div id="authModal" class="modal" aria-hidden="true">
+  <div class="dialog">
+    <h3 id="authTitle">Sign in to AgriWeave</h3>
+    <p class="muted small" id="authSubtitle">Access subscriptions, orders and referral credits.</p>
+
+    <div style="display:flex;gap:8px;margin:8px 0">
+      <button class="social-btn" onclick="socialSign('google')">Continue with Google</button>
+      <button class="social-btn" onclick="socialSign('facebook')">Continue with Facebook</button>
+    </div>
+
+    <div style="text-align:center;margin:6px 0;color:var(--muted)">— or —</div>
+
+    <form id="authForm" style="display:grid;gap:8px">
+      <input id="authEmail" placeholder="Email" type="email" required style="padding:.6rem;border:1px solid var(--line);border-radius:8px">
+      <input id="authPassword" placeholder="Password" type="password" required style="padding:.6rem;border:1px solid var(--line);border-radius:8px">
+      <div style="display:flex;gap:8px;align-items:center">
+        <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="rememberMe"> Remember me</label>
+        <div style="margin-left:auto"><a href="#" class="muted small" onclick="showReset()">Forgot?</a></div>
+      </div>
+
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn primary" onclick="submitAuth('signin')">Sign in</button>
+        <button type="button" class="btn ghost" onclick="toggleAuthMode()">Create account</button>
+      </div>
+    </form>
+
+    <div style="margin-top:10px;display:flex;justify-content:flex-end">
+      <button class="btn ghost" onclick="closeAuth()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bundle Builder Modal -->
+<div id="bundleModal" class="modal" aria-hidden="true">
+  <div class="dialog">
+    <h3>Build your weekly bundle</h3>
+    <p class="muted small">Pick up to 8 items and subscribe weekly. Build a box your family will love.</p>
+    <div id="bundleChoices" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:12px;max-height:360px;overflow:auto"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div class="muted small">Selected: <span id="bundleCount">0</span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" onclick="closeBundle()">Cancel</button>
+        <button class="btn primary" onclick="addBundleToCart()">Subscribe to box</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Farmer Profile Modal -->
+<div id="farmerModal" class="modal" aria-hidden="true">
+  <div class="dialog" id="farmerDialog"></div>
+</div>
+
+<!-- Reviews Modal -->
+<div id="reviewsModal" class="modal" aria-hidden="true">
+  <div class="dialog">
+    <h3>Community Reviews</h3>
+    <div id="reviewsList" style="max-height:360px;overflow:auto;margin-top:10px"></div>
+    <div style="margin-top:12px;display:flex;justify-content:flex-end">
+      <button class="btn ghost" onclick="closeReviews()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Referral Modal -->
+<div id="referralModal" class="modal" aria-hidden="true">
+  <div class="dialog">
+    <h3>Your Referral</h3>
+    <p class="muted small">Share your referral code — when a friend uses it, you both get ₹150 credit (demo).</p>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+      <input id="refCodeInput" readonly style="padding:.6rem;border:1px solid var(--line);border-radius:8px;background:#f7fff7">
+      <button class="btn ghost" onclick="copyReferral()">Copy</button>
+      <button class="btn primary" onclick="shareReferral()">Share</button>
+    </div>
+    <div style="margin-top:12px">
+      <div class="muted small">Your credits: ₹<span id="refCredits">0</span></div>
+      <div class="muted small">Points: <span id="pointsCount">0</span></div>
+    </div>
+    <div style="margin-top:12px;display:flex;justify-content:flex-end">
+      <button class="btn ghost" onclick="closeReferral()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="modal" aria-hidden="true">
+  <div class="dialog">
+    <h3>Checkout & Billing</h3>
+    <div id="billingContent" style="margin-top:8px"></div>
+
+    <form id="billingForm" style="display:grid;gap:8px;margin-top:12px">
+      <input id="billName" placeholder="Full name" required style="padding:.6rem;border:1px solid var(--line);border-radius:8px">
+      <input id="billEmail" placeholder="Email" type="email" required style="padding:.6rem;border:1px solid var(--line);border-radius:8px">
+      <input id="billAddress" placeholder="Address" required style="padding:.6rem;border:1px solid var(--line);border-radius:8px">
+      <input id="billCard" placeholder="Card number (demo) — optional if using UPI/wallet" style="padding:.6rem;border:1px solid var(--line);border-radius:8px">
+
+      <div style="margin-top:10px;font-weight:800">Choose payment method</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;border:1px solid var(--line);background:#fff"><input type="radio" name="paymethod" value="card" checked> Card (credit/debit)</label>
+        <label style="display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;border:1px solid var(--line);background:#fff"><input type="radio" name="paymethod" value="upi"> UPI (Google Pay/PhonePe/Paytm)</label>
+        <label style="display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;border:1px solid var(--line);background:#fff"><input type="radio" name="paymethod" value="wallet"> Wallet (PhonePe/Paytm)</label>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <label class="muted small">Use referral credits: ₹</label>
+        <input id="useRef" type="number" min="0" style="width:120px;padding:.4rem;border:1px solid var(--line);border-radius:8px" value="0">
+        <label class="muted small" style="margin-left:12px">Redeem points</label>
+        <input id="usePoints" type="number" min="0" style="width:120px;padding:.4rem;border:1px solid var(--line);border-radius:8px" value="0">
+      </div>
+    </form>
+
+    <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+      <div class="muted small">We accept Cards, UPI & major wallets (demo via Razorpay)</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" onclick="closeCheckout()">Close</button>
+        <button class="btn primary" onclick="checkoutWithRazorpay()">Pay securely</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#111;color:#fff;padding:8px 12px;border-radius:8px;display:none;z-index:2000"></div>
+
+<footer class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;align-items:center"><img src="agriweave-logo.png" alt="AgriWeave" style="height:42px"><div class="muted">From our farms to your table</div></div>
+    <div class="muted">© <span id="year"></span> AgriWeave</div>
+  </div>
+</footer>
+
+<!-- Razorpay script (demo) -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+/* ==============
+   CONFIG
+   ============== */
+const RAZORPAY_KEY = 'rzp_test_YOUR_TEST_KEY_HERE'; // replace with test/production key
+const AUTH_KEY = 'agw_users_v1';
+
+/* ==============
+   Helpers & State
+   ============== */
+function showToast(msg, ms=2200){
+  const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block';
+  setTimeout(()=>t.style.display='none', ms);
+}
+function formatRs(n){ return Number(n).toLocaleString('en-IN'); }
+function scrollToSection(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
+const STORAGE = {
+  CART: 'agw_cart_v2',
+  SUBS: 'agw_subs_v2',
+  REV: 'agw_reviews_v2',
+  REF: 'agw_ref_v2',
+  POINTS: 'agw_points_v2',
+  USERS: AUTH_KEY
+};
+
+let state = {
+  visibleCount: 12,
+  cart: JSON.parse(localStorage.getItem(STORAGE.CART) || '[]'),
+  subs: JSON.parse(localStorage.getItem(STORAGE.SUBS) || '[]'),
+  reviews: JSON.parse(localStorage.getItem(STORAGE.REV) || '[]'),
+  referral: JSON.parse(localStorage.getItem(STORAGE.REF) || '{}'),
+  points: Number(localStorage.getItem(STORAGE.POINTS) || '0'),
+  user: null  // signed-in user { email, name }
+};
+
+/* setup referral if not present */
+if(!state.referral.code){
+  state.referral.code = 'AGW' + Math.random().toString(36).slice(2,8).toUpperCase();
+  state.referral.credits = 0;
+  localStorage.setItem(STORAGE.REF, JSON.stringify(state.referral));
+}
+
+/* Persist helper */
+function saveAll(){
+  localStorage.setItem(STORAGE.CART, JSON.stringify(state.cart));
+  localStorage.setItem(STORAGE.SUBS, JSON.stringify(state.subs));
+  localStorage.setItem(STORAGE.REV, JSON.stringify(state.reviews));
+  localStorage.setItem(STORAGE.REF, JSON.stringify(state.referral));
+  localStorage.setItem(STORAGE.POINTS, String(state.points));
+}
+
+/* ==============
+   PRODUCTS & FARMERS (40 items included)
+   ============== */
+const FARMER_NAMES = ["Ravi Kumar","Sita Devi","Arjun Patel","Meera Nair","Sunil Rao","Radha Sharma","Vikram Singh","Anita Joshi","Ramesh Yadav","Priya Desai","Karan Mehta","Geeta Iyer","Sanjay Pillai","Leela Gupta","Asha Reddy","Mohit Verma","Tara Khatri","Ajay Chauhan","Nisha Kapoor","Deepak Roy","Kala Bhattacharjee"];
+function pickFarmer(i){ return FARMER_NAMES[(i * 11 + 3) % FARMER_NAMES.length]; }
+
+/* Full products list (40 items) */
+const PRODUCTS = [
+  { id:1001, code:'apple', name:'Apple (1kg)', price:120, img:'images/myitems/apple.jpg', harvest:'2025-11-10', batch:'A-101', farmerIndex:1 },
+  { id:1002, code:'banana', name:'Banana (1kg)', price:60, img:'images/myitems/banana.jpg', harvest:'2025-11-14', batch:'B-202', farmerIndex:2 },
+  { id:1003, code:'orange', name:'Orange (1kg)', price:90, img:'images/myitems/orange.jpg', harvest:'2025-11-12', batch:'O-303', farmerIndex:3 },
+  { id:1004, code:'mango', name:'Mango (1kg)', price:150, img:'images/myitems/mango.jpg', harvest:'2025-10-01', batch:'M-404', farmerIndex:4 },
+  { id:1005, code:'pomegranate', name:'Pomegranate (1kg)', price:160, img:'images/myitems/pomegranate.jpg', harvest:'2025-11-03', batch:'P-505', farmerIndex:5 },
+  { id:1006, code:'potato', name:'Potato (1kg)', price:25, img:'images/myitems/potato.jpg', harvest:'2025-11-18', batch:'V-106', farmerIndex:6 },
+  { id:1007, code:'tomato', name:'Tomato (1kg)', price:40, img:'images/myitems/tomato.jpg', harvest:'2025-11-18', batch:'T-207', farmerIndex:7 },
+  { id:1008, code:'onion', name:'Onion (1kg)', price:35, img:'images/myitems/onion.jpg', harvest:'2025-11-17', batch:'O-308', farmerIndex:8 },
+  { id:1009, code:'carrot', name:'Carrot (500g)', price:30, img:'images/myitems/carrot.jpg', harvest:'2025-11-13', batch:'C-409', farmerIndex:9 },
+  { id:1010, code:'beetroot', name:'Beetroot (500g)', price:35, img:'images/myitems/beetroot.jpg', harvest:'2025-11-11', batch:'B-510', farmerIndex:10 },
+  { id:1011, code:'spinach', name:'Spinach (250g)', price:20, img:'images/myitems/spinach.jpg', harvest:'2025-11-19', batch:'S-611', farmerIndex:11 },
+  { id:1012, code:'cauli', name:'Cauliflower (1pc)', price:50, img:'images/myitems/cauliflower.jpg', harvest:'2025-11-16', batch:'C-712', farmerIndex:12 },
+  { id:1013, code:'broccoli', name:'Broccoli (1pc)', price:60, img:'images/myitems/broccoli.jpg', harvest:'2025-11-14', batch:'B-813', farmerIndex:13 },
+  { id:1014, code:'cabbage', name:'Cabbage (1pc)', price:30, img:'images/myitems/cabbage.jpg', harvest:'2025-11-15', batch:'C-914', farmerIndex:14 },
+  { id:1015, code:'eggplant', name:'Eggplant (500g)', price:35, img:'images/myitems/eggplant.jpg', harvest:'2025-11-12', batch:'E-115', farmerIndex:15 },
+  { id:1016, code:'milk', name:'A Milk (1L)', price:65, img:'images/myitems/A Milk.jpg', harvest:'2025-11-18', batch:'D-116', farmerIndex:16 },
+  { id:1017, code:'curd', name:'Curd (500g)', price:45, img:'images/myitems/curd.jpg', harvest:'2025-11-18', batch:'D-217', farmerIndex:17 },
+  { id:1018, code:'paneer', name:'Paneer (200g)', price:95, img:'images/myitems/paneer.jpg', harvest:'2025-11-17', batch:'D-318', farmerIndex:18 },
+  { id:1019, code:'ghee', name:'Ghee (200g)', price:220, img:'images/myitems/ghee.jpg', harvest:'2025-11-16', batch:'D-419', farmerIndex:19 },
+  { id:1020, code:'butter', name:'Butter (100g)', price:80, img:'images/myitems/butter.jpg', harvest:'2025-11-15', batch:'D-520', farmerIndex:20 },
+  { id:1021, code:'atta', name:'Whole Wheat Atta (1kg)', price:60, img:'images/myitems/Wholewheatatta.jpg', harvest:'2025-10-30', batch:'G-121', farmerIndex:2 },
+  { id:1022, code:'rice', name:'Rice (Sona) 1kg', price:70, img:'images/myitems/Rice .jpg', harvest:'2025-10-20', batch:'G-222', farmerIndex:4 },
+  { id:1023, code:'millet', name:'Millet (1kg)', price:90, img:'images/myitems/millet.jpg', harvest:'2025-10-25', batch:'G-323', farmerIndex:6 },
+  { id:1024, code:'toor', name:'Toor Dal (500g)', price:80, img:'images/myitems/Tool Dal.jpg', harvest:'2025-10-28', batch:'G-424', farmerIndex:8 },
+  { id:1025, code:'moong', name:'Moong Dal (500g)', price:75, img:'images/myitems/Moong dal.jpg', harvest:'2025-10-29', batch:'G-525', farmerIndex:10 },
+  { id:1026, code:'groundnut_oil', name:'Groundnut Oil (1L)', price:220, img:'images/myitems/Groundnutoil.jpg', harvest:'2025-09-15', batch:'O-126', farmerIndex:12 },
+  { id:1027, code:'sesame_oil', name:'Sesame Oil (500ml)', price:260, img:'images/myitems/sesame oil.jpg', harvest:'2025-09-18', batch:'O-227', farmerIndex:14 },
+  { id:1028, code:'coconut_oil', name:'Coconut Oil (500ml)', price:240, img:'images/myitems/Coconut oil.jpg', harvest:'2025-09-10', batch:'O-328', farmerIndex:16 },
+  { id:1029, code:'mustard_oil', name:'Mustard Oil (1L)', price:200, img:'images/myitems/mustard_oil.jpg', harvest:'2025-09-20', batch:'O-429', farmerIndex:18 },
+  { id:1030, code:'honey', name:'Forest Honey (250g)', price:350, img:'images/myitems/Forest_honey.jpg', harvest:'2025-08-30', batch:'H-530', farmerIndex:20 },
+  { id:1031, code:'turmeric', name:'Turmeric (100g)', price:60, img:'images/myitems/turmeric.jpg', harvest:'2025-07-15', batch:'S-131', farmerIndex:3 },
+  { id:1032, code:'red_chili', name:'Red Chili Powder (100g)', price:50, img:'images/myitems/Red_chill.jpg', harvest:'2025-07-10', batch:'S-232', farmerIndex:5 },
+  { id:1033, code:'cumin', name:'Cumin (100g)', price:70, img:'images/myitems/cumin.jpg', harvest:'2025-07-12', batch:'S-333', farmerIndex:7 },
+  { id:1034, code:'coriander_powder', name:'Coriander Powder (100g)', price:45, img:'images/myitems/coriander_powder.jpg', harvest:'2025-07-11', batch:'S-434', farmerIndex:9 },
+  { id:1035, code:'mint', name:'Mint (bunch)', price:15, img:'images/myitems/mint.jpg', harvest:'2025-11-19', batch:'H-535', farmerIndex:11 },
+  { id:1036, code:'basil', name:'Basil (bunch)', price:18, img:'images/myitems/basil.jpg', harvest:'2025-11-15', batch:'H-636', farmerIndex:13 },
+  { id:1037, code:'coriander_leaves', name:'Coriander leaves (bunch)', price:12, img:'images/myitems/coriander_leaves.jpg', harvest:'2025-11-18', batch:'H-737', farmerIndex:15 },
+  { id:1038, code:'kiwi', name:'Kiwi (pack)', price:120, img:'images/myitems/kiwi.jpg', harvest:'2025-10-10', batch:'F-838', farmerIndex:17 },
+  { id:1039, code:'strawberry', name:'Strawberry (250g)', price:180, img:'images/myitems/strawberry.jpg', harvest:'2025-10-05', batch:'F-939', farmerIndex:19 },
+  { id:1040, code:'grapes', name:'Grapes (500g)', price:140, img:'images/myitems/grapes.jpg', harvest:'2025-10-08', batch:'F-1040', farmerIndex:2 }
+];
+PRODUCTS.forEach((p, idx) => { p.farmer = pickFarmer(p.farmerIndex || (idx+1)); });
+
+/* ==============
+   Reviews: ensure at least 120 reviews, average 4.9
+   We'll generate 120 reviews: 108 five-star, 12 four-star -> avg 4.9
+   ============== */
+const SAMPLE_MESSAGES = [
+  'Fresh produce and quick delivery! My family loved it.',
+  'Amazing transparency — loved the farmer story and the batch trace.',
+  'Subscription saved us time and money. Vegetables are very fresh.',
+  'Excellent packaging — everything arrived intact and crisp.',
+  'Clean, fresh and tasty. Very happy with AgriWeave.',
+  'Great quality fruits; apples were crisp and sweet.',
+  'Consistent quality week after week. Highly recommended!',
+  'Good price for the quality. Will order again.',
+  'Very happy with the delivery and freshness.',
+  'Excellent service — customer support was helpful.'
+];
+const SAMPLE_NAMES = ['Anjali R.','Rohit K.','Priya S.','Michael T.','Sana B.','Amit P.','Rekha M.','Sunil V.','Neha G.','Karan L.','Meera N.','Aditya S.','Ritu C.','Vikram J.','Pooja D.','Rahul T.','Suresh Y.','Ishita B.','Naveen R.','Tara P.','Kunal M.','Swati L.','Deepa K.','Hitesh R.','Gita S.','Farida A.','Rakesh N.','Divya P.','Sameer Q.','Bina S.'];
+
+function randomDateWithinPastYear(){
+  const now = new Date();
+  const past = new Date(now.getFullYear()-1, now.getMonth(), now.getDate());
+  const time = past.getTime() + Math.random() * (now.getTime() - past.getTime());
+  const d = new Date(time);
+  return d.toISOString().slice(0,10);
+}
+
+if(!state.reviews || state.reviews.length < 120){
+  const reviews = [];
+  // 108 five-star
+  for(let i=0;i<108;i++){
+    reviews.push({
+      name: SAMPLE_NAMES[Math.floor(Math.random()*SAMPLE_NAMES.length)],
+      rating:5,
+      date: randomDateWithinPastYear(),
+      text: SAMPLE_MESSAGES[Math.floor(Math.random()*SAMPLE_MESSAGES.length)],
+      verified: true
+    });
+  }
+  // 12 four-star
+  for(let i=0;i<12;i++){
+    reviews.push({
+      name: SAMPLE_NAMES[Math.floor(Math.random()*SAMPLE_NAMES.length)],
+      rating:4,
+      date: randomDateWithinPastYear(),
+      text: SAMPLE_MESSAGES[Math.floor(Math.random()*SAMPLE_MESSAGES.length)] + ' (nice, a little room for improvement)',
+      verified: true
+    });
+  }
+  // shuffle
+  reviews.sort(()=>0.5 - Math.random());
+  state.reviews = reviews;
+  localStorage.setItem(STORAGE.REV, JSON.stringify(state.reviews));
+}
+
+/* ==============
+   Farmer stories: build random stories for carousel
+   ============== */
+function buildFarmerStories(n=8){
+  const stories = [];
+  for(let i=1;i<=n;i++){
+    const name = pickFarmer(i);
+    const region = (i%8)+1;
+    const organic = (i%3===0);
+    const story = `Hi, I'm ${name}. I manage a small ${organic ? 'organic' : 'family'} farm in Region ${region}. This season we focused on soil health and careful harvesting. Batch trace: F-${100+i}.`;
+    stories.push({ id:i, name, region, organic, story, img:`https://source.unsplash.com/400x400/?farmer,agriculture,${i}` });
+  }
+  return stories;
+}
+const FARMER_STORIES = buildFarmerStories(8);
+
+/* ==============
+   Rendering functions
+   ============== */
+const PRODUCTS_PER_PAGE = 12;
+function renderProducts(reset=false){
+  if(reset) state.visibleCount = PRODUCTS_PER_PAGE;
+  const grid = document.getElementById('productsGrid');
+  let list = PRODUCTS.slice(0, state.visibleCount);
+  const sort = document.getElementById('sortSelect')?.value;
+  if(sort === 'price-low') list = list.slice().sort((a,b)=>a.price-b.price);
+  if(sort === 'price-high') list = list.slice().sort((a,b)=>b.price-a.price);
+  if(sort === 'fresh') list = list.slice().sort((a,b)=> (b.harvest||'').localeCompare(a.harvest||''));
+  grid.innerHTML = '';
+  list.forEach(p=>{
+    const card = document.createElement('div');
+    card.className = 'product';
+    card.innerHTML = `
+      <div class="thumb"><img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/600?text=No+Image'"></div>
+      <div style="margin-top:8px;font-weight:700">${p.name}</div>
+      <div class="muted small">${p.farmer} • Harvest: ${p.harvest}</div>
+      <div class="trust-row" style="margin-top:8px">
+        <div class="badge">Traceable</div>
+        <div class="badge">Farmer share: 65%</div>
+        <div style="margin-left:auto;font-weight:900">₹${formatRs(p.price)}</div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+        <button class="btn ghost" onclick="openProduct(${p.id})">View</button>
+        <button class="btn primary" onclick="addToCart(${p.id},1,'oneoff')">Add</button>
+        <button class="btn" onclick="addToCart(${p.id},1,'sub')" title="Subscribe weekly">Subscribe</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  document.getElementById('loadMore').style.display = (state.visibleCount < PRODUCTS.length) ? 'inline-block' : 'none';
+}
+document.getElementById('loadMore').addEventListener('click', ()=>{ state.visibleCount += PRODUCTS_PER_PAGE; renderProducts(); });
+
+/* Product modal */
+let dynamicModal = null;
+function openProduct(id){
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return showToast('Product not found');
+  const html = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><img src="${p.img}" style="width:100%;height:360px;object-fit:cover" onerror="this.onerror=null;this.src='https://via.placeholder.com/700?text=No+Image'"></div>
+      <div>
+        <h3 style="margin:0">${p.name}</h3>
+        <div class="muted small" style="margin-top:6px">Farmer: ${p.farmer}</div>
+        <div class="muted small">Batch: ${p.batch} • Harvested: ${p.harvest}</div>
+        <div style="margin-top:12px;font-weight:900">₹${formatRs(p.price)}</div>
+        <p class="muted small" style="margin-top:12px">Usage tip: store in a cool dry place. Use within 5 days for best freshness.</p>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn primary" onclick="addToCart(${p.id},1,'oneoff');closeDynamicModal()">Add to cart</button>
+          <button class="btn ghost" onclick="addToCart(${p.id},1,'sub');closeDynamicModal()">Subscribe weekly</button>
+          <button class="btn" onclick="openFarmerProfile(${p.farmerIndex})">Farmer profile</button>
+        </div>
+        <div style="margin-top:12px">
+          <div style="font-weight:800">Traceability</div>
+          <div class="muted small">Batch ID: ${p.batch} • Harvest date: ${p.harvest}</div>
+          <div style="margin-top:8px" class="muted small">QR (demo): <img src="https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${encodeURIComponent('batch:'+p.batch)}"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  openDynamicModal(html);
+}
+function openDynamicModal(html){
+  closeDynamicModal();
+  dynamicModal = document.createElement('div'); dynamicModal.className='modal open';
+  dynamicModal.style.zIndex = 1800;
+  const dialog = document.createElement('div'); dialog.className='dialog'; dialog.innerHTML = html;
+  dynamicModal.appendChild(dialog); document.body.appendChild(dynamicModal);
+  dynamicModal.addEventListener('click', (e)=>{ if(e.target === dynamicModal) closeDynamicModal(); });
+}
+function closeDynamicModal(){ if(dynamicModal){ dynamicModal.remove(); dynamicModal=null; } }
+
+/* ==============
+   CART & SUBSCRIPTIONS
+   ============== */
+function renderCart(){
+  const body = document.getElementById('cartBody'); body.innerHTML='';
+  if(!state.cart || state.cart.length === 0){
+    body.innerHTML = '<div class="muted">Cart is empty.</div>';
+    document.getElementById('cartCount').innerText = '0';
+    document.getElementById('cartSubtotal').innerText = '0';
+    return;
+  }
+  let subtotal = 0;
+  state.cart.forEach(it=>{
+    subtotal += it.price * it.qty;
+    const el = document.createElement('div');
+    el.style.display='flex'; el.style.gap='12px'; el.style.alignItems='center'; el.style.padding='8px'; el.style.marginBottom='8px'; el.style.border='1px solid var(--line)'; el.style.borderRadius='10px';
+    el.innerHTML = `
+      <img src="${it.img}" style="width:64px;height:64px;object-fit:cover;border-radius:8px" onerror="this.onerror=null;this.src='https://via.placeholder.com/200?text=No+Image'">
+      <div style="flex:1">
+        <div style="font-weight:700">${it.name}</div>
+        <div class="muted small">₹${formatRs(it.price)} × ${it.qty} ${it.type==='sub' ? '• subscription' : ''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+        <div style="display:flex;gap:6px">
+          <button class="btn ghost" onclick="changeQty(${it.id},-1,'${it.type}')">−</button>
+          <button class="btn ghost" onclick="changeQty(${it.id},1,'${it.type}')">＋</button>
+        </div>
+        <button class="btn" onclick="removeFromCart(${it.id},'${it.type}')">Remove</button>
+      </div>
+    `;
+    body.appendChild(el);
+  });
+  document.getElementById('cartSubtotal').innerText = formatRs(subtotal);
+  document.getElementById('cartCount').innerText = state.cart.reduce((a,b)=>a+b.qty,0);
+}
+function addToCart(id, qty=1, type='oneoff'){
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return showToast('Item not found');
+  const existing = state.cart.find(c => c.id === id && c.type === type);
+  if(existing) existing.qty += qty; else state.cart.push({ id:p.id, name:p.name, price:p.price, img:p.img, qty:qty, type:type });
+  saveAll(); renderCart(); toggleCart(true); showToast(type==='sub' ? 'Subscription added to cart' : 'Added to cart');
+}
+function changeQty(id, delta, type){ const it = state.cart.find(x=>x.id===id && x.type===type); if(!it) return; it.qty += delta; if(it.qty<=0) state.cart = state.cart.filter(x=>!(x.id===id && x.type===type)); saveAll(); renderCart(); }
+function removeFromCart(id, type){ state.cart = state.cart.filter(x=>!(x.id===id && x.type===type)); saveAll(); renderCart(); }
+function toggleCart(open){
+  const d = document.getElementById('cartDrawer');
+  if(open===undefined) open = !d.classList.contains('open');
+  d.classList.toggle('open', open); d.setAttribute('aria-hidden', open ? 'false' : 'true'); renderCart();
+}
+
+/* Subscriptions rendering */
+function renderSubscriptions(){
+  const container = document.getElementById('subscriptionsList'); container.innerHTML='';
+  if(!state.subs || state.subs.length===0){ document.getElementById('noSubs').style.display='block'; return; }
+  document.getElementById('noSubs').style.display='none';
+  state.subs.forEach(s=>{
+    const div = document.createElement('div'); div.className='sub-card';
+    div.innerHTML = `
+      <div style="display:flex;gap:12px;align-items:center">
+        <img src="${s.img}" style="width:64px;height:64px;object-fit:cover;border-radius:8px" onerror="this.onerror=null;this.src='https://via.placeholder.com/200?text=No+Image'">
+        <div>
+          <div style="font-weight:700">${s.name}</div>
+          <div class="muted small">₹${formatRs(s.price)} • ${s.schedule}</div>
+          <div class="muted small">Status: ${s.paused ? 'Paused' : 'Active'}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn" onclick="toggleSub(${s.id})">${s.paused ? 'Resume' : 'Pause'}</button>
+        <button class="btn ghost" onclick="cancelSub(${s.id})">Cancel</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+function toggleSub(id){ const s = state.subs.find(x=>x.id===id); if(!s) return; s.paused = !s.paused; saveAll(); renderSubscriptions(); showToast(s.paused ? 'Subscription paused' : 'Subscription resumed'); }
+function cancelSub(id){ if(!confirm('Cancel subscription?')) return; state.subs = state.subs.filter(x=>x.id!==id); saveAll(); renderSubscriptions(); showToast('Subscription cancelled'); }
+
+/* Seed subscriptions if empty (demo) */
+(function seedSubscriptionsIfEmpty(){
+  if(state.subs && state.subs.length>0) return;
+  const unique = [];
+  for(let i=2;i<10 && unique.length<4;i+=2) unique.push(PRODUCTS[i % PRODUCTS.length]);
+  state.subs = unique.map(it => ({ id: it.id, name: it.name, price: it.price, img: it.img, qty: 1, schedule: 'weekly', paused:false, startedAt: new Date().toISOString() }));
+  saveAll();
+})();
+
+/* Bundle builder */
+let currentBundle = new Set();
+function openBundleBuilder(){
+  document.getElementById('bundleModal').classList.add('open');
+  document.getElementById('bundleModal').setAttribute('aria-hidden','false');
+  const choices = document.getElementById('bundleChoices'); choices.innerHTML='';
+  PRODUCTS.forEach(p=>{
+    const card = document.createElement('div'); card.className='product';
+    card.style.padding='8px';
+    card.innerHTML = `<img src="${p.img}" style="width:100%;height:90px;object-fit:cover;border-radius:6px;margin-bottom:8px" onerror="this.onerror=null;this.src='https://via.placeholder.com/200?text=No+Image'"><div style="font-weight:700">${p.name.split(' ')[0]}</div><div class="muted small">₹${formatRs(p.price)}</div>`;
+    card.onclick = ()=>{
+      if(currentBundle.has(p.id)) currentBundle.delete(p.id); else if(currentBundle.size < 8) currentBundle.add(p.id);
+      document.getElementById('bundleCount').innerText = currentBundle.size;
+      card.style.border = currentBundle.has(p.id) ? '2px solid var(--accent)' : '1px solid var(--line)';
+    };
+    choices.appendChild(card);
+  });
+  document.getElementById('bundleCount').innerText = currentBundle.size;
+}
+function closeBundle(){ document.getElementById('bundleModal').classList.remove('open'); document.getElementById('bundleModal').setAttribute('aria-hidden','true'); currentBundle = new Set(); }
+function addBundleToCart(){
+  if(currentBundle.size === 0){ alert('Select at least one item'); return; }
+  const items = Array.from(currentBundle).map(id => PRODUCTS.find(p=>p.id===id));
+  const title = 'Custom Box (' + items.length + ' items)';
+  const price = items.reduce((s,i)=>s+i.price,0) - Math.round(items.reduce((s,i)=>s+i.price,0) * 0.08);
+  const bundleId = 9000 + Math.floor(Math.random()*9000);
+  state.cart.push({ id: bundleId, name: title, price: price, img: items[0].img, qty:1, type:'sub', meta: { items: items.map(i=>i.id) } });
+  saveAll(); renderCart(); closeBundle(); toggleCart(true); showToast('Bundle added as subscription (weekly)');
+}
+
+/* Reviews rendering */
+function renderReviews(){
+  const list = document.getElementById('reviewsList'); list.innerHTML='';
+  const reviews = state.reviews || [];
+  if(reviews.length === 0){ list.innerHTML = '<div class="muted">No reviews yet — buy and be the first to review!</div>'; return; }
+  reviews.slice().reverse().forEach(r=>{
+    const div = document.createElement('div'); div.className='review';
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${r.name}</strong> <span class="muted small">${r.date}</span></div><div class="stars">${stars}</div></div><div class="muted small" style="margin-top:6px">${r.text}</div>${r.image ? `<div style="margin-top:8px"><img src="${r.image}" style="width:120px;height:120px;object-fit:cover;border-radius:8px"></div>` : '' }`;
+    list.appendChild(div);
+  });
+}
+function openReviews(){ document.getElementById('reviewsModal').classList.add('open'); document.getElementById('reviewsModal').setAttribute('aria-hidden','false'); renderReviews(); }
+function closeReviews(){ document.getElementById('reviewsModal').classList.remove('open'); document.getElementById('reviewsModal').setAttribute('aria-hidden','true'); }
+
+/* Reviews snapshot for homepage */
+function renderReviewSnapshot(){
+  const snap = document.getElementById('reviewSnapshot');
+  const total = state.reviews.length || 0;
+  const avg = total ? (state.reviews.reduce((s,r)=>s+r.rating,0)/total) : 0;
+  const avgRounded = avg ? (Math.round(avg*10)/10).toFixed(1) : '0.0';
+  const stars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+  snap.innerHTML = `<div style="display:flex;gap:12px;align-items:center"><div style="font-weight:900;font-size:1.2rem">${avgRounded}/5</div><div class="muted small">${total} verified reviews</div></div><div style="margin-top:6px" class="stars">${stars}</div>`;
+}
+
+/* Farmer carousel */
+function renderFarmerCarousel(){
+  const el = document.getElementById('farmersCarousel');
+  el.innerHTML = '';
+  FARMER_STORIES.forEach(f=>{
+    const tile = document.createElement('div'); tile.className='farmer-tile';
+    tile.innerHTML = `<img src="${f.img}" style="width:72px;height:72px;border-radius:8px;object-fit:cover"><div style="flex:1"><div style="font-weight:800">${f.name}</div><div class="muted small">Region ${f.region} • ${f.organic ? 'Organic' : 'Family farm'}</div><div class="muted small" style="margin-top:6px">${f.story.slice(0,90)}...</div><div style="margin-top:8px"><button class="btn ghost" onclick="openFarmerProfile(${f.id})">Read</button></div></div>`;
+    el.appendChild(tile);
+  });
+}
+
+/* Farmer profile modal */
+function openFarmerProfile(index){
+  const f = FARMER_STORIES.find(x=>x.id===index) || FARMER_STORIES[0];
+  const html = `<div style="display:flex;gap:12px;flex-direction:column">
+    <div style="display:flex;gap:12px">
+      <div style="width:220px"><img src="${f.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"></div>
+      <div>
+        <h3 style="margin:0">${f.name}</h3>
+        <div class="muted small" style="margin-top:6px">Region ${f.region} • Organic: ${f.organic ? 'Yes' : 'No'}</div>
+        <p class="muted small" style="margin-top:10px">${f.story}</p>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn primary" onclick="closeFarmerModal();showToast('Thank you for supporting ${f.name}!')">Follow</button>
+          <button class="btn ghost" onclick="closeFarmerModal()">Close</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8px" class="muted small">More stories & harvest photos coming soon.</div>
+  </div>`;
+  document.getElementById('farmerDialog').innerHTML = html;
+  document.getElementById('farmerModal').classList.add('open'); document.getElementById('farmerModal').setAttribute('aria-hidden','false');
+}
+function closeFarmerModal(){ document.getElementById('farmerModal').classList.remove('open'); document.getElementById('farmerModal').setAttribute('aria-hidden','true'); }
+
+/* ==============
+   REFERRAL & LOYALTY
+   ============== */
+function openReferral(){ document.getElementById('referralModal').classList.add('open'); document.getElementById('referralModal').setAttribute('aria-hidden','false'); document.getElementById('refCodeInput').value = state.referral.code; document.getElementById('refCredits').innerText = state.referral.credits || 0; document.getElementById('pointsCount').innerText = state.points || 0; }
+function closeReferral(){ document.getElementById('referralModal').classList.remove('open'); document.getElementById('referralModal').setAttribute('aria-hidden','true'); }
+function copyReferral(){ navigator.clipboard && navigator.clipboard.writeText(state.referral.code).then(()=>showToast('Referral code copied')); }
+function shareReferral(){ if(navigator.share){ navigator.share({title:'Join AgriWeave',text:'Use my code to get ₹150 off: ' + state.referral.code}); } else { copyReferral(); } }
+function awardReferralCredits(amount){ state.referral.credits = (state.referral.credits || 0) + amount; localStorage.setItem(STORAGE.REF, JSON.stringify(state.referral)); document.getElementById('refCredits').innerText = state.referral.credits; }
+function awardPoints(points){ state.points = (state.points || 0) + points; localStorage.setItem(STORAGE.POINTS, String(state.points)); document.getElementById('pointsCount').innerText = state.points; document.getElementById('loyaltyBadge').innerText = 'Points: ' + state.points; }
+
+/* ==============
+   CHECKOUT
+   ============== */
+function openCheckout(){
+  if(state.cart.length === 0){ alert('Cart is empty'); return; }
+  const billing = document.getElementById('billingContent'); billing.innerHTML='';
+  let total = 0;
+  state.cart.forEach(it=>{
+    const div = document.createElement('div'); div.style.display='flex'; div.style.justifyContent='space-between'; div.style.padding='6px 0';
+    div.innerHTML = `<div><strong>${it.name}</strong><div class="muted small">${it.type==='sub' ? 'Subscription' : 'One-time'} • Qty: ${it.qty}</div></div><div>₹${formatRs(it.price * it.qty)}</div>`;
+    billing.appendChild(div);
+    total += it.price * it.qty;
+  });
+  const hr = document.createElement('hr'); billing.appendChild(hr);
+  const totalDiv = document.createElement('div'); totalDiv.style.display='flex'; totalDiv.style.justifyContent='space-between'; totalDiv.style.marginTop='8px'; totalDiv.innerHTML = `<div style="font-weight:800">Total</div><div style="font-weight:900">₹<span id="checkoutTotal">${formatRs(total)}</span></div>`;
+  billing.appendChild(totalDiv);
+
+  document.getElementById('useRef').value = 0; document.getElementById('usePoints').value = 0;
+  document.getElementById('useRef').setAttribute('max', state.referral.credits || 0);
+  document.getElementById('usePoints').setAttribute('max', state.points || 0);
+
+  document.getElementById('checkoutModal').classList.add('open'); document.getElementById('checkoutModal').setAttribute('aria-hidden','false');
+}
+function closeCheckout(){ document.getElementById('checkoutModal').classList.remove('open'); document.getElementById('checkoutModal').setAttribute('aria-hidden','true'); }
+
+function checkoutWithRazorpay(){
+  const name = document.getElementById('billName').value.trim();
+  const email = document.getElementById('billEmail').value.trim();
+  const address = document.getElementById('billAddress').value.trim();
+  if(!name || !email || !address){ alert('Please fill name, email and address'); return; }
+
+  let total = state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const useRef = Math.min(Number(document.getElementById('useRef').value || 0), state.referral.credits || 0);
+  const usePoints = Math.min(Number(document.getElementById('usePoints').value || 0), state.points || 0);
+  const amountToPay = Math.max(0, total - (useRef + usePoints));
+  const method = document.querySelector('input[name="paymethod"]:checked')?.value || 'card';
+
+  if(!RAZORPAY_KEY || RAZORPAY_KEY.includes('YOUR_TEST_KEY')){
+    showToast('Razorpay key not set — demo payment');
+    simulatePaymentFlow(useRef, usePoints);
+    return;
+  }
+
+  const options = {
+    key: RAZORPAY_KEY,
+    amount: Math.round(amountToPay * 100),
+    currency: 'INR',
+    name: 'AgriWeave',
+    description: `Order payment (${method})`,
+    prefill: { name, email },
+    theme: { color: '#2b7a0b' },
+    handler: function (response){
+      simulatePaymentFlow(useRef, usePoints, response.razorpay_payment_id);
+    },
+    modal: { ondismiss: function(){ showToast('Payment cancelled'); } }
+  };
+
+  try {
+    const rzp = new Razorpay(options); rzp.open();
+  } catch (err){
+    console.error(err);
+    showToast('Razorpay failed — demo flow');
+    simulatePaymentFlow(useRef, usePoints);
+  }
+}
+
+function simulatePaymentFlow(useRef=0, usePoints=0, externalPaymentId=null){
+  state.referral.credits = (state.referral.credits || 0) - useRef;
+  state.points = (state.points || 0) - usePoints;
+
+  const oneoffs = state.cart.filter(c => c.type === 'oneoff');
+  const subsToAdd = state.cart.filter(c => c.type === 'sub');
+  state.cart = state.cart.filter(c => c.type !== 'oneoff');
+
+  subsToAdd.forEach(it=>{
+    const existing = state.subs.find(s => s.id === it.id);
+    if(existing){ existing.qty = (existing.qty || 1) + it.qty; existing.paused = false; }
+    else { state.subs.push({ id: it.id, name: it.name, price: it.price, img: it.img, qty: it.qty, schedule: 'weekly', paused:false, startedAt:new Date().toISOString() }); }
+  });
+
+  let spent = oneoffs.reduce((s,i)=>s+i.price*i.qty,0) + subsToAdd.reduce((s,i)=>s+i.price*i.qty,0);
+  const earnedPoints = Math.floor(spent / 100) * 2;
+  awardPoints(earnedPoints);
+
+  saveAll(); renderCart(); renderSubscriptions(); closeCheckout(); toggleCart(false);
+
+  const paymentRef = externalPaymentId ? ` (payment id ${externalPaymentId})` : '';
+  showToast('Payment complete' + paymentRef + '. Points earned: ' + earnedPoints, 3500);
+}
+
+/* ==============
+   AUTH (demo using localStorage)
+   ============== */
+function openAuth(){
+  document.getElementById('authModal').classList.add('open');
+  document.getElementById('authModal').setAttribute('aria-hidden','false');
+  document.getElementById('authTitle').innerText = 'Sign in to AgriWeave';
+  document.getElementById('authSubtitle').innerText = 'Access subscriptions, orders and referral credits.';
+  authMode = 'signin';
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+}
+function closeAuth(){ document.getElementById('authModal').classList.remove('open'); document.getElementById('authModal').setAttribute('aria-hidden','true'); }
+
+let authMode = 'signin'; // 'signin' or 'signup'
+function toggleAuthMode(){
+  authMode = (authMode === 'signin') ? 'signup' : 'signin';
+  document.getElementById('authTitle').innerText = authMode === 'signin' ? 'Sign in to AgriWeave' : 'Create your account';
+  document.getElementById('authSubtitle').innerText = authMode === 'signin' ? 'Access subscriptions, orders and referral credits.' : 'Create an account to manage subscriptions & orders.';
+}
+
+function socialSign(provider){
+  const fakeEmail = provider + '_user@demo.agri';
+  const user = { email: fakeEmail, name: provider.charAt(0).toUpperCase()+provider.slice(1)+' User', provider };
+  setSignedInUser(user);
+  closeAuth();
+  showToast('Signed in with ' + provider);
+}
+
+function submitAuth(action){
+  const email = document.getElementById('authEmail').value.trim();
+  const pw = document.getElementById('authPassword').value;
+  if(!email || !pw) return alert('Please enter email and password');
+
+  const users = JSON.parse(localStorage.getItem(STORAGE.USERS) || '{}');
+
+  if(action === 'signin' || authMode === 'signin'){
+    const u = users[email];
+    if(!u || u.password !== pw) return alert('Invalid email or password (demo)');
+    setSignedInUser({ email, name: u.name || email });
+    closeAuth(); showToast('Signed in');
+  } else {
+    if(users[email]) return alert('An account with this email already exists (demo).');
+    users[email] = { email, password: pw, name: email.split('@')[0] };
+    localStorage.setItem(STORAGE.USERS, JSON.stringify(users));
+    setSignedInUser({ email, name: users[email].name });
+    closeAuth(); showToast('Account created & signed in');
+  }
+}
+
+function setSignedInUser(user){
+  state.user = user;
+  document.getElementById('signinBtn').innerText = user.name ? user.name.split(' ')[0] : 'Account';
+  sessionStorage.setItem('agw_user', JSON.stringify(user));
+}
+
+/* quick reset / forgot (demo) */
+function showReset(){ alert('Demo: reset via account creation. This is a front-end demo only.'); }
+
+/* ==============
+   SEARCH
+   ============== */
+function applySearch(){
+  const q = document.getElementById('globalSearch').value.trim().toLowerCase();
+  if(!q){ renderProducts(true); return; }
+  const grid = document.getElementById('productsGrid'); grid.innerHTML='';
+  const list = PRODUCTS.filter(p => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || (p.farmer && p.farmer.toLowerCase().includes(q)));
+  if(list.length === 0) grid.innerHTML = '<div class="muted">No results</div>';
+  else list.forEach(p => {
+    const card = document.createElement('div'); card.className='product';
+    card.innerHTML = `<div class="thumb"><img src="${p.img}" onerror="this.onerror=null;this.src='https://via.placeholder.com/600?text=No+Image'"></div><div style="margin-top:8px;font-weight:700">${p.name}</div><div class="muted small">${p.farmer} • Harvest: ${p.harvest}</div><div style="margin-top:8px;display:flex;gap:8px;align-items:center"><button class="btn ghost" onclick="openProduct(${p.id})">View</button><button class="btn primary" onclick="addToCart(${p.id},1,'oneoff')">Add</button></div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ==============
+   init / wiring
+   ============== */
+document.getElementById('openCart').addEventListener('click', ()=> toggleCart(true));
+document.getElementById('year').textContent = new Date().getFullYear();
+document.getElementById('refCodeInput').value = state.referral.code || '';
+document.getElementById('refCredits').innerText = state.referral.credits || 0;
+document.getElementById('pointsCount').innerText = state.points || 0;
+document.getElementById('loyaltyBadge').innerText = 'Points: ' + (state.points || 0);
+document.getElementById('refBadge').innerText = state.referral.code ? ('Referral: ' + state.referral.code) : 'Referral: none';
+
+renderProducts();
+renderCart();
+renderSubscriptions();
+renderReviews();
+renderReviewSnapshot();
+renderFarmerCarousel();
+
+/* expose functions used by inline handlers */
+window.openBundleBuilder = openBundleBuilder;
+window.closeBundle = closeBundle;
+window.addBundleToCart = addBundleToCart;
+window.openFarmerProfile = openFarmerProfile;
+window.openFarmersPage = ()=>{ showToast('Farmers page (demo)'); openFarmerProfile(1); };
+window.openReviews = openReviews;
+window.openReferral = openReferral;
+window.openCheckout = openCheckout;
+window.closeCheckout = closeCheckout;
+window.closeReviews = closeReviews;
+window.copyReferral = copyReferral;
+window.shareReferral = shareReferral;
+window.openAuth = openAuth;
+window.closeAuth = closeAuth;
+window.applySearch = applySearch;
+
+</script>
+</body>
+</html>
